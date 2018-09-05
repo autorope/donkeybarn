@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def find_line_from_mask(mask, window_height=10):
+def find_line_coef_from_mask(mask, window_height=10):
     img_height = mask.shape[0]
     lane_cords = []
     y_window_top = 0

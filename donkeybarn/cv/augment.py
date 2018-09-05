@@ -29,7 +29,7 @@ def add_rectangles(arr, n=2):
     return arr
 
 
-def random_blur(arr, probability=.2, min_kernal_size=2, max_kernal_size=3):
+def random_blur(arr, probability=.4, min_kernal_size=2, max_kernal_size=3):
     if probability > random.random():
         kernal_size = random.randint(min_kernal_size, max_kernal_size)
         kernel = np.ones((kernal_size, kernal_size), np.float32) / (kernal_size ** 2)
@@ -37,7 +37,7 @@ def random_blur(arr, probability=.2, min_kernal_size=2, max_kernal_size=3):
     return arr
 
 
-def random_brightness(arr, probability=.1):
+def random_brightness(arr, probability=.4):
     if probability > random.random():
         random_bright = np.random.uniform(.1, 1) + .5
         hsv = cv2.cvtColor(arr, cv2.COLOR_BGR2HSV)  # convert it to hsv
@@ -47,7 +47,7 @@ def random_brightness(arr, probability=.1):
 
 
 def augment_images(arr):
-    arr = add_rectangles(arr, n=5)
+    arr = add_rectangles(arr, n=4)
     arr = random_blur(arr, probability=.2, min_kernal_size=2, max_kernal_size=4)
     arr = random_brightness(arr)
     return arr

@@ -2,26 +2,54 @@ import os
 from os.path import dirname, abspath
 import glob
 
-class DonkeyCalibration:
+from donkeybarn import fileio
+
+
+class BaseDataset:
+
+    url = None
+    file_format = ".tar.gz"
 
     @classmethod
-    def load(cls):
+    def load(cls, data_dir=None):
 
-        barn_path = dirname(dirname(abspath(__file__)))
-        data_path = os.path.join(barn_path, 'data', 'camera_calibration')
-        img_list = glob.glob(os.path.join(data_path, '*.jpg'))
+        if data_dir is None:
+            data_dir = os.path.expanduser('~/donkey_data')
 
-        obj = DonkeyCalibration(img_list)
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
+
+        filename = cls.__name__ + cls.file_format
+
+        filepath = os.path.join(data_dir, filename)
+        fileio.download_file(cls.url, filepath)
+        extracted_folder = fileio.extract_file(filepath, data_dir)
+
+        obj = cls(extracted_folder)
         return obj
 
-    def __init__(self, img_paths):
-        self.img_paths = img_paths
+    def __init__(self, base_dir):
+        self.base_dir = base_dir
+        self.img_paths = glob.glob(os.path.join(base_dir, '*.jpg'))
+        self.img_paths = sorted(self.img_paths, key=lambda x: int(os.path.split(x)[-1].split('_')[0]))
 
+
+
+
+class Donkey2CalibrationImages(BaseDataset):
+
+    url = "https://drive.google.com/uc?export=download&id=1yk758anknZqAwPBcrWa4vGZ_3Xgh1gmU"
+    file_format = ".tar.gz"
+    checkerboard_size = (7, 9)
+
+
+class AmericanSteelLabeled(BaseDataset):
+    url = 'https://drive.google.com/uc?export=download&id=1GKkB_xMgOoUPf0J3OGzj6wtke1eqPU0Q'
+    format = ".tar.gz"
 
 
 if __name__ == "__main__":
-    obj = DonkeyCalibration.load()
-
+    obj = Donkey2CalibrationImages.load()
     print('test')
 
     print(obj.img_paths)
