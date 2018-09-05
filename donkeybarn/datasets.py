@@ -48,6 +48,11 @@ class AmericanSteelLabeled(BaseDataset):
     format = ".tar.gz"
 
 
+class DriveaiLabeled(BaseDataset):
+    url = 'https://drive.google.com/uc?export=download&id=10R8VOHyzd0QD0zNLzLel5Mg6EWFOKSMX'
+    format = ".tar.gz"
+
+
 if __name__ == "__main__":
     obj = Donkey2CalibrationImages.load()
     print('test')
