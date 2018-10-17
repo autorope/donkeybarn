@@ -20,7 +20,10 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 import json
 import cv2
-assert cv2.__version__[0] == '3', 'The fisheye module requires opencv version >= 3.0.0'
+try:
+    assert cv2.__version__[0] == '3', 'The fisheye module requires opencv version >= 3.0.0'
+except AssertionError as e:
+    print('You should have opencv 3 or greater. Some functions wont work.')
 from joblib import Parallel, delayed
 import logging
 from numpy import finfo

@@ -22,3 +22,16 @@ def find_line_coef_from_mask(mask, window_height=10):
     line_coef = np.polyfit(lane_cord_arr[:, 1], lane_cord_arr[:, 0], deg=2)
 
     return line_coef
+
+
+
+def flip_line_coef(coef, img_width=160):
+    """
+    Flips a line defined by its coefficients around the center vertical of the image.
+    Used to augment training data.
+    """
+    x2, x1, x0 = coef
+    x0 = img_width-x0
+    x1 = -x1
+    x2 = -x2
+    return np.array([x2, x1, x0])
