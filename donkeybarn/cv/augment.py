@@ -3,6 +3,55 @@ import cv2
 import numpy as np
 from PIL import Image
 
+
+class AugmentPipeline:
+    def __init__(self, data):
+        self.data = data.copy()
+        self.pipeline = []
+
+    def add(self, processor, input_ix=[0, ], chance=.2):
+        self.pipeline.append(
+            {'processor': processor,
+             'input_ix': input_ix,
+             'chance': chance})
+
+    def run(self, gen_count=None):
+        
+        #TODO: Ensure that all data is used before reselecting previous samples.
+
+        if gen_count == None:
+            gen_count = len(self.data)
+
+        results = []
+
+        # get row of data
+        for i in range(gen_count):
+            row_num = np.random.randint(0, len(self.data))
+            row = self.data[row_num].copy()
+
+            # run row of data through pipeline
+            for p in self.pipeline:
+
+                # only run pipeline step if chance test succedes
+                if p['chance'] > random.random():
+
+                    # get inputs
+                    inputs = []
+                    for input_ix in p['input_ix']:
+                        inputs.append(row[input_ix])
+
+                    # run processor
+                    result = p['processor'].run(inputs)
+
+                    for i, output_ix in enumerate(p['input_ix']):
+                        row[output_ix] = result[i]
+
+            results.append(row)
+
+        results = np.stack(results)
+        return results
+
+
 class BaseProcessor:
 
     def __init__(self):
@@ -56,7 +105,7 @@ class RandomBrightness(BaseProcessor):
     def __init__(self, probability=.4):
         self.run_arr = self.random_brightness
 
-    def random_brightness(self, arr, probability=.4):
+    def random_brightness(self, arr):
         random_bright = np.random.uniform(.1, 1) + .5
         hsv = cv2.cvtColor(arr, cv2.COLOR_BGR2HSV)  # convert it to hsv
         hsv[:, :, 2] = np.clip(hsv[:, :, 2] * random_bright, 0, 255)

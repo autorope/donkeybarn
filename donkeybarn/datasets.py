@@ -8,7 +8,21 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 
+
+
+#TODO: Fatten the labels datastructure in the dataset so that they are accessable from
+# dataset.label[0]
+# dataset.img[0]
+# dataset[0, ['img']]
+# merged = dataset1 + dataset2
+
 class BaseDataset:
+    base_dir = None
+    img_paths = []
+    labels = None
+
+
+class LoadedDataset(BaseDataset):
 
     url = None
     file_format = ".tar.gz"
@@ -17,7 +31,7 @@ class BaseDataset:
     def load(cls, data_dir=None):
 
         if data_dir is None:
-            data_dir = os.path.expanduser('~/donkey_data')
+            data_dir = cls.get_data_dir()
 
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
@@ -31,12 +45,15 @@ class BaseDataset:
         obj = cls(extracted_folder)
         return obj
 
+    @classmethod
+    def get_data_dir(cls, ):
+        from donkeybarn import BARN_DATA_DIR
+        return BARN_DATA_DIR
+
     def __init__(self, base_dir):
         self.base_dir = base_dir
         self.img_paths = glob.glob(os.path.join(base_dir, '*.jpg'))
         self.img_paths = sorted(self.img_paths, key=lambda x: int(os.path.split(x)[-1].split('_')[0]))
-
-        self.labels = None
 
         try:
             labels_path = os.path.join(base_dir, 'labels.json')
@@ -47,11 +64,6 @@ class BaseDataset:
             print(e)
 
 
-def create_polygon_tuple(pts_list, img_height):
-    pt_array = []
-    for pt in pts_list:
-        pt_array.append((pt['x'], img_height - pt['y']))
-    return pt_array
 
 
 class LabelBoxData:
@@ -87,29 +99,36 @@ class LabelBoxData:
         return mask
 
 
+def create_polygon_tuple(pts_list, img_height):
+    pt_array = []
+    for pt in pts_list:
+        pt_array.append((pt['x'], img_height - pt['y']))
+    return pt_array
 
 
 
-class Donkey2CalibrationImages(BaseDataset):
+
+class Donkey2CalibrationImages(LoadedDataset):
 
     url = "https://drive.google.com/uc?export=download&id=1yk758anknZqAwPBcrWa4vGZ_3Xgh1gmU"
     file_format = ".tar.gz"
     checkerboard_size = (7, 9)
 
 
-class AmericanSteelLabeled(BaseDataset):
+class AmericanSteelLabeled(LoadedDataset):
     url = 'https://drive.google.com/uc?export=download&id=1GKkB_xMgOoUPf0J3OGzj6wtke1eqPU0Q'
     format = ".tar.gz"
 
 
-class DriveaiLabeled(BaseDataset):
+class DriveaiLabeled(LoadedDataset):
     url = 'https://drive.google.com/uc?export=download&id=10R8VOHyzd0QD0zNLzLel5Mg6EWFOKSMX'
     format = ".tar.gz"
 
 
-class MakerFaireLabeled(BaseDataset):
+class MakerFaireLabeled(LoadedDataset):
     url = 'https://drive.google.com/uc?export=download&id=1ohTZYbuQwxLb63uZTajlDNn8cJmoG_az'
     format = ".tar.gz"
+
 
 if __name__ == "__main__":
     obj = Donkey2CalibrationImages.load()

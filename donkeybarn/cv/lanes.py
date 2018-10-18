@@ -21,6 +21,7 @@ def find_line_coef_from_mask(mask, window_height=10):
     lane_cord_arr = np.array(lane_cords)
     line_coef = np.polyfit(lane_cord_arr[:, 1], lane_cord_arr[:, 0], deg=2)
 
+
     return line_coef
 
 
