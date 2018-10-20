@@ -60,8 +60,8 @@ class LoadedDataset(BaseDataset):
             self.labels = LabelBoxData(labels_path)
             self.labels.gen_external_key_index()
 
-        except Exception as e:
-            print(e)
+        except FileNotFoundError as e:
+            print('could not filed labels.json in {}, not loading labels.'.format(base_dir))
 
 
 
@@ -129,6 +129,10 @@ class MakerFaireLabeled(LoadedDataset):
     url = 'https://drive.google.com/uc?export=download&id=1ohTZYbuQwxLb63uZTajlDNn8cJmoG_az'
     format = ".tar.gz"
 
+
+class AWSTrack(LoadedDataset):
+    url = 'https://drive.google.com/uc?export=download&id=1h1zu6VN_txhyb86hHx3K6COXs_UqMIRL'
+    format = ".tar.gz"
 
 if __name__ == "__main__":
     obj = Donkey2CalibrationImages.load()

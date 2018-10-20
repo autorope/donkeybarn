@@ -141,9 +141,3 @@ class RandomFlip(BaseProcessor):
         y = self.func_on_flip(y)
         return [x, y]
 
-
-def augment_images(arr):
-    arr = add_rectangles(arr, n=4)
-    arr = random_blur(arr, probability=.2, min_kernal_size=2, max_kernal_size=4)
-    arr = random_brightness(arr)
-    return arr
